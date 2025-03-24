@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using modeloMeseros.Models;
 
@@ -18,39 +17,39 @@ namespace modeloMeseros.Controllers
             _context = context;
         }
 
-        // GET: Pedido_Local
-        public async Task<IActionResult> Index()
+        // Método GET para mostrar la vista con el filtro
+        public IActionResult Create(string tipoMenu)
         {
-            return View(await _context.Pedido_Local.ToListAsync());
-        }
+            // Verificar si el tipo de menú se recibió correctamente
+            Console.WriteLine($"Tipo de menú recibido: {tipoMenu}");
 
-        // GET: Pedido_Local/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            // Obtener platos según el tipo de menú seleccionado
+            var platos = _context.platos
+                .Join(_context.menu_plato, p => p.id, mp => mp.plato_id, (p, mp) => new { p, mp })
+                .Join(_context.menu, temp => temp.mp.menu_id, m => m.id, (temp, m) => new { temp.p, m })
+                .Where(x => string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu)
+                .Select(x => x.p)
+                .ToList();
+
+            Console.WriteLine($"Total de platos encontrados: {platos.Count}");
+
+            if (!platos.Any())
             {
-                return NotFound();
+                ViewBag.ErrorMessage = "No hay platos disponibles para este menú.";
             }
 
-            var pedido_Local = await _context.Pedido_Local
-                .FirstOrDefaultAsync(m => m.id_pedido == id);
-            if (pedido_Local == null)
+            var model = new PedidoPlatosViewModel
             {
-                return NotFound();
-            }
+                Pedido = new Pedido_Local(),
+                ListaPlatos = platos
+            };
 
-            return View(pedido_Local);
+            ViewBag.TipoMenu = tipoMenu; // Para que el `select` recuerde la selección
+
+            return View(model);
         }
 
-        // GET: Pedido_Local/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Pedido_Local/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Método POST para guardar el pedido
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id_pedido,id_mesa,nombre_cliente,fechaApertura,estado,id_mesero")] Pedido_Local pedido_Local)
@@ -61,96 +60,15 @@ namespace modeloMeseros.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(pedido_Local);
-        }
 
-        // GET: Pedido_Local/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            // Si hay un error, recargar los platos
+            var model = new PedidoPlatosViewModel
             {
-                return NotFound();
-            }
+                Pedido = pedido_Local,
+                ListaPlatos = _context.platos.ToList()
+            };
 
-            var pedido_Local = await _context.Pedido_Local.FindAsync(id);
-            if (pedido_Local == null)
-            {
-                return NotFound();
-            }
-            return View(pedido_Local);
-        }
-
-        // POST: Pedido_Local/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id_pedido,id_mesa,nombre_cliente,fechaApertura,estado,id_mesero")] Pedido_Local pedido_Local)
-        {
-            if (id != pedido_Local.id_pedido)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(pedido_Local);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Pedido_LocalExists(pedido_Local.id_pedido))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(pedido_Local);
-        }
-
-        // GET: Pedido_Local/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var pedido_Local = await _context.Pedido_Local
-                .FirstOrDefaultAsync(m => m.id_pedido == id);
-            if (pedido_Local == null)
-            {
-                return NotFound();
-            }
-
-            return View(pedido_Local);
-        }
-
-        // POST: Pedido_Local/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var pedido_Local = await _context.Pedido_Local.FindAsync(id);
-            if (pedido_Local != null)
-            {
-                _context.Pedido_Local.Remove(pedido_Local);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool Pedido_LocalExists(int id)
-        {
-            return _context.Pedido_Local.Any(e => e.id_pedido == id);
+            return View(model);
         }
     }
 }
