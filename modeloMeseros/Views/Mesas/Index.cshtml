@@ -1,53 +1,138 @@
 ﻿@model IEnumerable<modeloMeseros.Models.mesas>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Mesas";
 }
 
-<h1>Index</h1>
+<head>
+    <link rel="stylesheet" href="/css_C/Style.css" asp-append-version="true" />
+</head>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.numero)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.capacidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.disponibilidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.numero)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.capacidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.disponibilidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.estado)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-4">
+    <!-- Menú de navegación entre las vistas de mesas -->
+    <ul class="nav nav-tabs" id="mesasTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="mesasDisponibles-tab" data-bs-toggle="tab" href="#mesasDisponibles" role="tab" aria-controls="mesasDisponibles" aria-selected="true">
+                Mesas Disponibles
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="mesasOcupadas-tab" data-bs-toggle="tab" href="#mesasOcupadas" role="tab" aria-controls="mesasOcupadas" aria-selected="false">
+                Mesas Ocupadas
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="mesasTabContent">
+        <!-- Vistas de mesas disponibles -->
+        <div class="tab-pane fade show active" id="mesasDisponibles" role="tabpanel" aria-labelledby="mesasDisponibles-tab">
+            <h2 class="mb-3 text-center" style="color: var(--primary-color);">Mesas Disponibles</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            if (item.estado == 0)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="ruta-a-imagen.png" alt="Mesa" class="me-3" style="width: 50px; height: 50px;">
+                                        <div>
+                                            <strong>Mesa @item.numero</strong><br>
+                                            <small>Capacidad: @item.capacidad personas</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-agregar" data-id="@item.id" data-numero="@item.numero" data-capacidad="@item.capacidad" data-bs-toggle="modal" data-bs-target="#mesaModal-@item.id">
+                                        <span class="icon-plus">+</span>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                if (item.estado == 0)  
+                {
+                    <div class="modal fade" id="mesaModal-@item.id" tabindex="-1" aria-labelledby="mesaModalLabel-@item.id" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="mesaModalLabel-@item.id">Detalles de Mesa @item.numero</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Capacidad:</strong> @item.capacidad personas</p>
+                                    <p><strong>Disponibilidad:</strong> @item.disponibilidad</p>
+                                    <p>¿Quieres ocupar esta mesa?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="post" asp-action="Ocupar" asp-route-id="@item.id">
+                                        <button type="submit" class="btn btn-primary">Ocupar Mesa</button>
+                                    </form>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Vistas de mesas ocupadas -->
+        <div class="tab-pane fade" id="mesasOcupadas" role="tabpanel" aria-labelledby="mesasOcupadas-tab">
+            <h2 class="mb-3 text-center" style="color: var(--primary-color);">Mesas Ocupadas</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        @foreach (var item in Model)
+                        {
+                            if (item.estado == 1)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <img src="ruta-a-imagen.png" alt="Mesa" class="me-3" style="width: 50px; height: 50px;">
+                                        <div>
+                                            <strong>Mesa @item.numero</strong><br>
+                                            <small>Capacidad: @item.capacidad personas</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-detalles" data-bs-toggle="modal" data-bs-target="#detallePedidoModal-@item.id">
+                                        <span class="icon-eye">👁</span>
+                                    </button>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            @foreach (var item in Model)
+            {
+                if (item.estado == 1)  
+                {
+                    <div class="modal fade" id="detallePedidoModal-@item.id" tabindex="-1" aria-labelledby="detallePedidoModalLabel-@item.id" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="detallePedidoModalLabel-@item.id">Detalles del Pedido Mesa @item.numero</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Capacidad:</strong> @item.capacidad personas</p>
+                                    <p><strong>Estado:</strong> Ocupada</p>
+                                    <p><strong>Detalles del Pedido:</strong> (Aquí van los detalles del pedido)</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

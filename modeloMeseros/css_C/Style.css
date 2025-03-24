@@ -1,2 +1,128 @@
-﻿body {
+﻿/* Colores personalizados */
+:root {
+    --primary-color: #e74c3c; /* Rojo */
+    --secondary-color: #fff;
+    --background-color: #f4f6f8;
+    --text-color: #333;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.nav-link {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    padding: 10px 20px;
+    border-radius: 25px;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+}
+
+    .nav-link:hover {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+    }
+
+    .nav-link.active {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+    }
+
+.tab-content {
+    margin-top: 30px;
+}
+
+.list-group-item {
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .list-group-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .list-group-item img {
+        border-radius: 50%;
+    }
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.modal-body {
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+/* Botones rojos */
+.btn-primary, .btn-outline-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: var(--secondary-color);
+    transition: background-color 0.3s ease;
+}
+
+    .btn-primary:hover, .btn-outline-primary:hover {
+        background-color: #c0392b;
+    }
+
+.btn-secondary {
+    background-color: #7f8c8d;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+}
+
+    .btn-secondary:hover {
+        background-color: #95a5a6;
+    }
+
+.btn-close {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+}
+
+.icon-plus {
+    font-size: 1.5rem;
+    margin-right: 8px;
+}
+
+
+.btn-agregar, .btn-detalles {
+    background-color: var(--primary-color);
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-agregar:hover, .btn-detalles:hover {
+        background-color: #c0392b;
+    }
+
+.icon-plus, .icon-eye {
+    font-size: 1.5rem;
 }

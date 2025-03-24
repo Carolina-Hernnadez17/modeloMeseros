@@ -148,9 +148,62 @@ namespace modeloMeseros.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Ocupar(int id)
+        {
+            var mesa = await _context.mesas.FindAsync(id);
+            if (mesa == null)
+            {
+                return NotFound();
+            }
+
+            // Cambiar el estado a ocupado y disponibilidad a "ocupado"
+            mesa.estado = 1;  // 1 representa "ocupado"
+            mesa.disponibilidad = "ocupado";  // Cambiar disponibilidad a "ocupado"
+
+            try
+            {
+                _context.Update(mesa);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MesasExists(mesa.id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        // Método para verificar si la mesa existe
+        private bool MesasExists(int id)
+        {
+            return _context.mesas.Any(e => e.id == id);
+        }
+
+        public async Task<IActionResult> MesasOcupadas()
+        {
+            var mesasOcupadas = await _context.mesas
+                .Where(m => m.estado == 1)  // Filtrar mesas ocupadas
+                .ToListAsync();
+
+            return View(mesasOcupadas);
+        }
+
+
         private bool mesasExists(int id)
         {
             return _context.mesas.Any(e => e.id == id);
         }
+
+
     }
 }
