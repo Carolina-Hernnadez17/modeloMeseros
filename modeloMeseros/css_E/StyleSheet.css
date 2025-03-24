@@ -25,6 +25,11 @@
     margin-bottom: 20px;
 }
 
+.section-detalles-pedido{
+    margin-bottom:50px;
+    padding: 30px;
+}
+
 .descripcion-plato {
     background: #FEF7FF;
     margin: auto;
@@ -38,7 +43,7 @@
 }
 hr {
     width: 100%; /* Ajusta el ancho de la línea */
-    height: 100px; /* Define el grosor de la línea */
+    height: 50%; /* Define el grosor de la línea */
     background-color: #000000; /* Cambia el color de la línea */
     
 } 
