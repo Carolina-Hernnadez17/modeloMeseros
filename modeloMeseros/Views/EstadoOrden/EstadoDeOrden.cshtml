@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/LayoutVertical.cshtml";
 }
 
-
+<link href="../css_R/EstadoOrden.css" rel="stylesheet" />
 @{
     ViewData["Title"] = "Estado de Orden";
     var detallesPedido = ViewBag.Detalles_Pedido as List<modeloMeseros.Models.Detalle_Pedido> ?? new List<modeloMeseros.Models.Detalle_Pedido>();
@@ -25,7 +25,7 @@
                 <input type="number" class="form-control" id="numeroMesa" name="numeroMesa" required>
             </div>
             <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">Mostrar</button>
+                <button type="submit" class="btn btn-danger">Mostrar</button>
             </div>
         </div>
     </form>
@@ -64,7 +64,6 @@
                         <input type="hidden" name="idPedido" value="@pedido.id_pedido" />
                         <button type="submit" class="btn btn-outline-primary btn-sm">Cambiar Estado</button>
                     </form>
-                    <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-three-dots"></i></button>
                 </div>
             }
         </div>

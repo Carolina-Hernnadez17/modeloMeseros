@@ -34,8 +34,9 @@ namespace modeloMeseros.Controllers
             ViewBag.Pedidos = pedidos;
             ViewBag.Detalles_Pedido = detalles;
 
-            return View("EstadoDeOrden"); // Retornamos la misma vista con los datos
+            return View("EstadoDeOrden"); 
         }
+        //Me falta arreglar esto 
         [HttpPost]
         public IActionResult CambiarEstado(int idPedido)
         {
@@ -43,98 +44,90 @@ namespace modeloMeseros.Controllers
 
             if (pedido != null)
             {
-                pedido.estado = "Cerrada";  // Cambiar el estado a "Cerrada"
+                pedido.estado = "Cerrada";  
                 _context.SaveChanges();
             }
 
-            return RedirectToAction("EstadoDeOrden");  // Redirigir a la vista después de actualizar el estado
+            return RedirectToAction("EstadoDeOrden"); 
         }
+        //// GET: EstadoOrdenController
+        //public ActionResult Index()
+        //{
+        //    return View();
+        //}
+        ////public ActionResult EstadoDeOrden()
+        ////{
+        ////    return View();
+        ////}
 
 
-
-
-
-        // GET: EstadoOrdenController
-
-
-
-        public ActionResult Index()
-        {
-            return View();
-        }
-        //public ActionResult EstadoDeOrden()
+        //// GET: EstadoOrdenController/Details/5
+        //public ActionResult Details(int id)
         //{
         //    return View();
         //}
 
+        //// GET: EstadoOrdenController/Create
+        //public ActionResult Create()
+        //{
+        //    return View();
+        //}
 
-        // GET: EstadoOrdenController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
+        //// POST: EstadoOrdenController/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
-        // GET: EstadoOrdenController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        //// GET: EstadoOrdenController/Edit/5
+        //public ActionResult Edit(int id)
+        //{
+        //    return View();
+        //}
 
-        // POST: EstadoOrdenController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //// POST: EstadoOrdenController/Edit/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
 
-        // GET: EstadoOrdenController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        //// GET: EstadoOrdenController/Delete/5
+        //public ActionResult Delete(int id)
+        //{
+        //    return View();
+        //}
 
-        // POST: EstadoOrdenController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: EstadoOrdenController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: EstadoOrdenController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //// POST: EstadoOrdenController/Delete/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Delete(int id, IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }
