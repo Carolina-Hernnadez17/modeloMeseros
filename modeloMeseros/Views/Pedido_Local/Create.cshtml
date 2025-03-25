@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Crear Pedido Local";
+    Layout = "~/Views/Shared/LayoutVertical.cshtml";
 }
 
 @if (Model == null)
@@ -15,23 +16,8 @@
 }
 
 <div class="d-flex">
-    <!-- Barra lateral -->
-    <nav class="bg-danger text-white p-3" style="width: 250px; min-height: 100vh;">
-        <h3 class="text-center">Foodie</h3>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a href="#" class="nav-link text-white">Mesas Disponibles</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-white">Mesas Ocupadas</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-white">Item 3</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-white">Item 4</a></li>
-        </ul>
-    </nav>
-
-    <!-- Contenido principal -->
-    <div class="container mt-4 bg-light p-4 rounded flex-grow-1" style="background-color: #fdf8e5;">
+    <div class="container mt-4 bg-light p-4 rounded flex-grow-1">
         <h2 class="mb-4">Abrir cuenta de los clientes</h2>
-
-        <!-- Formulario para filtrar por menú -->
-        
         <form asp-action="Create" method="get">
             <div class="row mb-3">
                 <div class="col">
@@ -64,14 +50,8 @@
                     <input asp-for="Pedido.id_mesero" class="form-control" />
                     <span asp-validation-for="Pedido.id_mesero" class="text-danger"></span>
                 </div>
-
-
-               
             </div>
 
-            
-
-            <!-- Tabla de Platos Filtrados -->
             <div class="mt-4">
                 <h2>Lista de Platos</h2>
                 <table class="table table-bordered">
@@ -84,7 +64,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.ListaPlatos.Any())
+                        @if (Model?.ListaPlatos != null && Model.ListaPlatos.Any())
                         {
                             @foreach (var plato in Model.ListaPlatos)
                             {
@@ -106,26 +86,13 @@
                 </table>
             </div>
 
-            <!-- Botón de envío -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Crear Pedido</button>
             </div>
-
-
-
-
         </form>
 
-
-        <!-- Botón para volver -->
         <div class="mt-3 text-center">
             <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

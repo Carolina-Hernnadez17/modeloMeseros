@@ -46,7 +46,8 @@ namespace modeloMeseros.Controllers
 
             ViewBag.TipoMenu = tipoMenu; // Para que el `select` recuerde la selección
 
-            return View(model);
+            return View("~/Views/Pedido_Local/Create.cshtml", model);
+
         }
 
         // Método POST para guardar el pedido
