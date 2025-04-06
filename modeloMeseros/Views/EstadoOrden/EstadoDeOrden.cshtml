@@ -1,4 +1,4 @@
-﻿@model List<modeloMeseros.Models.Pedido_Local>
+﻿@* @model List<modeloMeseros.Models.Pedido_Local>
 
 @{
     Layout = "~/Views/Shared/LayoutVertical.cshtml";
@@ -69,4 +69,124 @@
         </div>
     }
 </div>
+
+ *@
+
+@model List<modeloMeseros.Models.Pedido_Local>
+
+@{
+    Layout = "~/Views/Shared/LayoutVertical.cshtml";
+    ViewData["Title"] = "Estado de Orden";
+    var detallesPedido = ViewBag.Detalles_Pedido as List<modeloMeseros.Models.Detalle_Pedido> ?? new List<modeloMeseros.Models.Detalle_Pedido>();
+    var pedidos = ViewBag.Pedidos as List<modeloMeseros.Models.Pedido_Local> ?? new List<modeloMeseros.Models.Pedido_Local>();
+}
+
+<head>
+    <link href="../css_R/EstadoOrden.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+
+
+<div class="container mt-4">
+    <h3>Buscar orden</h3>
+    <!-- Este accion sirve para filtrar si uno quiere buscar por nombre y id de la messa  -->
+
+    <form method="post" asp-action="BuscarPedidos" asp-controller="EstadoOrden">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="nombreCliente" class="form-label">Nombre del Cliente:</label>
+                <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" required>
+            </div>
+            <div class="col-md-4">
+                <label for="numeroMesa" class="form-label">N° de Mesa:</label>
+                <input type="number" class="form-control" id="numeroMesa" name="numeroMesa" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-danger">Mostrar</button>
+            </div>
+        </div>
+    </form>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-warning">@TempData["Error"]</div>
+    }
+
+    @if (pedidos.Any())
+    {
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mt-4">Lista de Pedidos </h4>
+            <form asp-action="EstadoDeOrden" method="post">
+                <button type="submit" class="btn btn-danger"><i class="fas fa-sync-alt"></i></button>
+            </form>
+        </div>
+        <div class="list-group">
+            @foreach (var pedido in pedidos)
+            {
+                <div class="list-group-item mb-4">
+                    <h5>Pedido #@pedido.id_pedido - Mesa: @pedido.id_mesa</h5>
+                    <p><strong>Cliente:</strong> @pedido.nombre_cliente</p>
+                    <p><strong>Estado:</strong> @pedido.estado</p>
+
+                    <h6>Detalles:</h6>
+                    @if (detallesPedido.Any(d => d.encabezado_id == pedido.id_pedido && d.tipo_venta == "Local"))
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-danger color-tabla">
+                                    <tr>
+                                        <th>Tipo de Ítem</th>
+                                        <th>Cantidad</th>
+                                        <th>Subtotal</th>
+                                        <th>Comentarios</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detalle in detallesPedido.Where(d => d.encabezado_id == pedido.id_pedido && d.tipo_venta == "Local"))
+                                    {
+                                        <tr>
+                                            <td>@detalle.tipo_Item</td>
+                                            <td>@detalle.cantidad</td>
+                                            <td>$@detalle.subtotal</td>
+                                            <td>@detalle.comentarios</td>
+                                            <td>@detalle.estado</td>
+                                            <td>
+                                                <form method="post" asp-action="CambiarEstadoDetalle" asp-controller="EstadoOrden" class="d-inline">
+                                                    <input type="hidden" name="idDetalle" value="@detalle.id_detalle_pedido" />
+
+                                                    @if (detalle.estado == "Finalizado")
+                                                    {
+                                                        <button type="submit" name="nuevoEstado" value="Entregado" class="btn btn-success btn-sm">Entregado</button>
+
+                                                    }
+                                                    @if (detalle.estado == "Pendiente")
+                                                    {
+                                                        <button type="submit" name="nuevoEstado" value="Cancelado" class="btn btn-danger btn-sm">Cancelar</button>
+                                                    }
+                                                    
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p><em>No hay detalles activos para este pedido.</em></p>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">No se encontraron pedidos abiertos.</div>
+    }
+</div>
+
 
