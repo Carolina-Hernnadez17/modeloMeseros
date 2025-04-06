@@ -1,80 +1,4 @@
-﻿@* @model List<modeloMeseros.Models.Pedido_Local>
-
-@{
-    Layout = "~/Views/Shared/LayoutVertical.cshtml";
-}
-
-<link href="../css_R/EstadoOrden.css" rel="stylesheet" />
-@{
-    ViewData["Title"] = "Estado de Orden";
-    var detallesPedido = ViewBag.Detalles_Pedido as List<modeloMeseros.Models.Detalle_Pedido> ?? new List<modeloMeseros.Models.Detalle_Pedido>();
-    var pedidos = ViewBag.Pedidos as List<modeloMeseros.Models.Pedido_Local> ?? new List<modeloMeseros.Models.Pedido_Local>();
-}
-
-<div class="container mt-4">
-    <h3>Buscar orden</h3>
-
-    <form method="post" asp-action="BuscarPedidos" asp-controller="EstadoOrden">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <label for="nombreCliente" class="form-label">Nombre del Cliente:</label>
-                <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" required>
-            </div>
-            <div class="col-md-4">
-                <label for="numeroMesa" class="form-label">N° de Mesa:</label>
-                <input type="number" class="form-control" id="numeroMesa" name="numeroMesa" required>
-            </div>
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-danger">Mostrar</button>
-            </div>
-        </div>
-    </form>
-
-    @if (pedidos.Any())
-    {
-        <h4>Lista de Pedidos</h4>
-        <div class="list-group">
-            @foreach (var pedido in pedidos)
-            {
-                <div class="list-group-item">
-                    <h5>Pedido #@pedido.id_pedido - Mesa: @pedido.id_mesa</h5>
-                    <p><strong>Cliente:</strong> @pedido.nombre_cliente</p>
-                    <p><strong>Estado:</strong> @pedido.estado</p>
-
-                    <h6>Detalles:</h6>
-                    <ul>
-                        @if (detallesPedido.Any(d => d.encabezado_id == pedido.id_pedido))
-                        {
-                            @foreach (var detalle in detallesPedido.Where(d => d.encabezado_id == pedido.id_pedido))
-                            {
-                                <li>
-                                    <strong>@detalle.tipo_Item</strong> - Cantidad: @detalle.cantidad - Subtotal: $@detalle.subtotal
-                                    <br>
-                                    <small>Comentarios: @detalle.comentarios</small>
-                                </li>
-                            }
-                        }
-                        else
-                        {
-                            <li><em>No hay detalles disponibles.</em></li>
-                        }
-                    </ul>
-
-                    <form method="post" asp-action="CambiarEstado" asp-controller="EstadoOrden">
-                        <input type="hidden" name="idPedido" value="@pedido.id_pedido" />
-                        <button type="submit" class="btn btn-outline-primary btn-sm">Cambiar Estado</button>
-                    </form>
-                </div>
-            }
-        </div>
-    }
-</div>
-
- *@
-
-@model List<modeloMeseros.Models.Pedido_Local>
-
-@{
+﻿@{
     Layout = "~/Views/Shared/LayoutVertical.cshtml";
     ViewData["Title"] = "Estado de Orden";
     var detallesPedido = ViewBag.Detalles_Pedido as List<modeloMeseros.Models.Detalle_Pedido> ?? new List<modeloMeseros.Models.Detalle_Pedido>();
@@ -159,14 +83,20 @@
 
                                                     @if (detalle.estado == "Finalizado")
                                                     {
-                                                        <button type="submit" name="nuevoEstado" value="Entregado" class="btn btn-success btn-sm">Entregado</button>
-
+                                                        <button type="submit" name="nuevoEstado" value="Entregado"
+                                                                class="btn btn-outline-danger btn-sm"
+                                                                onclick="return confirm('¿Está seguro de que desea marcar este pedido como ENTREGADO?');">
+                                                            Entregar pedido
+                                                        </button>
                                                     }
                                                     @if (detalle.estado == "Pendiente")
                                                     {
-                                                        <button type="submit" name="nuevoEstado" value="Cancelado" class="btn btn-danger btn-sm">Cancelar</button>
+                                                        <button type="submit" name="nuevoEstado" value="Cancelado"
+                                                                class="btn btn-outline-dark btn-sm"
+                                                                onclick="return confirm('¿Está seguro de que desea marcar este pedido como CANCELADO?');">
+                                                            Cancelar pedido
+                                                        </button>
                                                     }
-                                                    
                                                 </form>
                                             </td>
                                         </tr>

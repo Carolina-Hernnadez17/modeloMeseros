@@ -33,36 +33,6 @@ namespace modeloMeseros.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public IActionResult BuscarPedidos(string nombreCliente, int numeroMesa)
-        //{
-        //    var pedidos = _context.Pedido_Local
-        //        .Where(p => p.nombre_cliente == nombreCliente && p.id_mesa == numeroMesa)
-        //        .ToList();
-
-        //    var detalles = _context.Detalle_Pedido
-        //        .Where(d => pedidos.Select(p => p.id_pedido).Contains(d.encabezado_id))
-        //        .ToList();
-
-        //    ViewBag.Pedidos = pedidos;
-        //    ViewBag.Detalles_Pedido = detalles;
-
-        //    return View("EstadoDeOrden"); 
-        //}
-        ////Me falta arreglar esto 
-        //[HttpPost]
-        //public IActionResult CambiarEstado(int idPedido)
-        //{
-        //    var pedido = _context.Pedido_Local.FirstOrDefault(p => p.id_pedido == idPedido);
-
-        //    if (pedido != null)
-        //    {
-        //        pedido.estado = "Cerrada";  
-        //        _context.SaveChanges();
-        //    }
-
-        //    return RedirectToAction("EstadoDeOrden"); 
-        //}
         [HttpPost]
         public IActionResult BuscarPedidos(string nombreCliente, int numeroMesa)
         {
