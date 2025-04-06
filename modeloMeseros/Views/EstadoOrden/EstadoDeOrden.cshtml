@@ -186,6 +186,9 @@
     else
     {
         <div class="alert alert-info mt-4">No se encontraron pedidos abiertos.</div>
+        <form asp-action="EstadoDeOrden" method="post">
+            <button type="submit" class="btn btn-danger"><i class="fas fa-sync-alt"></i></button>
+        </form>
     }
 </div>
 
