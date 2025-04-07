@@ -158,9 +158,8 @@ namespace modeloMeseros.Controllers
                 return NotFound();
             }
 
-            // Cambiar el estado a ocupado y disponibilidad a "ocupado"
             mesa.estado = 1;  // 1 representa "ocupado"
-            mesa.disponibilidad = "ocupado";  // Cambiar disponibilidad a "ocupado"
+            mesa.disponibilidad = "ocupado";  
 
             try
             {
