@@ -133,30 +133,70 @@ public class Pedido_LocalController : Controller
     [HttpPost]
     public ActionResult AbrirCuenta(PedidoPlatosViewModel model)
     {
+        model.Pedido.estado = "Abierta";
+        foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+        {
+            Console.WriteLine($"Error: {error.ErrorMessage}");
+        }
+        // Validar el modelo
         if (!ModelState.IsValid)
         {
+            // Mostrar los errores de validación
             foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
             {
-                Console.WriteLine(error.ErrorMessage);
+                Console.WriteLine(error.ErrorMessage); // Se imprimen los errores en la consola para depuración
             }
-            return View("~/Views/Pedido_Local/Create.cshtml");
+            return View("~/Views/Pedido_Local/Create.cshtml", model);
         }
 
+        // Asegurarse de que el modelo no sea nulo
+        if (model.Pedido == null)
+        {
+            ModelState.AddModelError("", "El modelo del pedido no es válido.");
+            return View("~/Views/Pedido_Local/Create.cshtml", model);
+        }
+
+        // Establecer la fecha de apertura y el estado
         model.Pedido.fechaApertura = DateTime.Now;
-        model.Pedido.estado = "Abierta";
+       
+
+        // Depuración de los valores del modelo antes de guardar
+        Console.WriteLine($"Guardando Pedido: Cliente: {model.Pedido.nombre_cliente}, Mesa: {model.Pedido.id_mesa}, Mesero: {model.Pedido.id_mesero}, Estado: {model.Pedido.estado}");
 
         try
         {
+            // Verificar si el contexto está correctamente configurado
+            if (_context == null)
+            {
+                ModelState.AddModelError("", "El contexto de base de datos no está configurado.");
+                return View("~/Views/Pedido_Local/Create.cshtml", model);
+            }
+
+            // Agregar el pedido a la base de datos
             _context.Pedido_Local.Add(model.Pedido);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
+            int result = _context.SaveChanges(); // Guardar los cambios
+
+            // Comprobar cuántos registros se han guardado
+            if (result > 0)
+            {
+                Console.WriteLine($"Se guardaron {result} registros.");
+            }
+            else
+            {
+                Console.WriteLine("No se guardaron registros.");
+            }
+
+            return View("~/Views/Pedido_Local/Create.cshtml");
         }
         catch (Exception ex)
         {
+            // Manejar excepciones de la base de datos y agregar un error al ModelState
             ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+            Console.WriteLine($"Error al guardar: {ex.Message}"); // Mostrar el error en la consola para depuración
             return View("~/Views/Pedido_Local/Create.cshtml", model);
         }
     }
+
 
 
 }

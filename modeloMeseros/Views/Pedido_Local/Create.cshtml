@@ -94,7 +94,6 @@
                 </div>
             </div>
         </form>
-
         <!-- Formulario de apertura de cuenta -->
         <form asp-action="AbrirCuenta" method="post" class="shadow-sm p-3 bg-white rounded">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -102,22 +101,26 @@
             <div class="row mb-3">
                 <div class="col">
                     <label asp-for="Pedido.nombre_cliente" class="form-label">Nombre del Cliente:</label>
-                    <input asp-for="Pedido.nombre_cliente" class="form-control" />
+                    <input asp-for="Pedido.nombre_cliente" type="text" class="form-control" />
                     <span asp-validation-for="Pedido.nombre_cliente" class="text-danger"></span>
                 </div>
 
                 <div class="col">
                     <label asp-for="Pedido.id_mesa" class="form-label">Nº de Mesa:</label>
-                    <input asp-for="Pedido.id_mesa" class="form-control" />
+                    <input asp-for="Pedido.id_mesa" type="number" class="form-control" />
                     <span asp-validation-for="Pedido.id_mesa" class="text-danger"></span>
                 </div>
 
                 <div class="col">
                     <label asp-for="Pedido.id_mesero" class="form-label">ID Mesero:</label>
-                    <input asp-for="Pedido.id_mesero" class="form-control" />
+                    <input asp-for="Pedido.id_mesero" type="number" class="form-control" />
                     <span asp-validation-for="Pedido.id_mesero" class="text-danger"></span>
                 </div>
             </div>
+
+            <!-- Campo oculto para confirmar que el dato se envía -->
+          
+            <input type="hidden" asp-for="Pedido.estado" value="Abierta" />
 
             <div class="text-center">
                 <button type="submit" class="btn btn-danger" name="abrirCuenta">Abrir Cuenta</button>
