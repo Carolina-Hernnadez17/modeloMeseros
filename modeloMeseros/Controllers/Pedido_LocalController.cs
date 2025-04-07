@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using modeloMeseros.Models;
 using System;
@@ -16,6 +17,40 @@ public class Pedido_LocalController : Controller
 
     public IActionResult Create(string tipoMenu, int? tipoCombo, int? tipoPromocion)
     {
+
+
+        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
+        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
+
+        if (mesaLibre != null)
+        {
+
+            HttpContext.Session.Remove("id_mesa");
+            HttpContext.Session.Remove("nombreCliente");
+            HttpContext.Session.Remove("idMesero");
+            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
+            ViewBag.idMesa = mesaLibre.Value;
+        }
+
+        if (mesaOCupada != null)
+        {
+            HttpContext.Session.Remove("id_mesaOcupada");
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
+
+            if (pedido != null)
+            {
+                
+                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
+                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
+                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
+
+                ViewBag.nombreCliente = pedido.nombre_cliente;
+                ViewBag.idMesero = pedido.id_mesero;
+                ViewBag.idMesa = pedido.id_mesa;
+            }
+        }
+       
+
         // Obtener la hora actual como TimeSpan
         var horaActual = DateTime.Now.TimeOfDay;
 
@@ -133,6 +168,7 @@ public class Pedido_LocalController : Controller
     [HttpPost]
     public ActionResult AbrirCuenta(PedidoPlatosViewModel model)
     {
+
         model.Pedido.estado = "Abierta";
         foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
         {
@@ -174,7 +210,11 @@ public class Pedido_LocalController : Controller
 
             // Agregar el pedido a la base de datos
             _context.Pedido_Local.Add(model.Pedido);
-            int result = _context.SaveChanges(); // Guardar los cambios
+            int result = _context.SaveChanges();
+
+            ViewBag.nombreCliente = model.Pedido.nombre_cliente;
+            ViewBag.idMesa = model.Pedido.id_mesa;
+            ViewBag.idMesero = model.Pedido.id_mesero;
 
             // Comprobar cuántos registros se han guardado
             if (result > 0)
@@ -197,6 +237,122 @@ public class Pedido_LocalController : Controller
         }
     }
 
+    [HttpPost]
+    public IActionResult GuardarPlatos(string comentarios_plato,string tipo_item, decimal precio, int item_id, int cantidad_plato)
+    {
+        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
+        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
+
+
+
+
+        if (mesaLibre != null)
+        {
+            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
+            ViewBag.idMesa = mesaLibre.Value;
+        }
+
+        if (mesaOCupada != null)
+        {
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
+
+            if (pedido != null)
+            {
+                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
+                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
+                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
+
+                ViewBag.nombreCliente = pedido.nombre_cliente;
+                ViewBag.idMesero = pedido.id_mesero;
+                ViewBag.idMesa = pedido.id_mesa;
+            }
+        }
+
+        var datos_cliente = _context.Pedido_Local
+                         .OrderByDescending(p => p.id_pedido)
+                         .FirstOrDefault();
+
+        int id_pedido = datos_cliente.id_pedido;
+        
+
+        if(cantidad_plato > 0)
+        {
+            var detalle_p = new Detalle_Pedido
+                {
+                    encabezado_id = id_pedido,
+                    tipo_venta = "Local",
+                    tipo_Item= tipo_item,
+                    item_id= item_id,
+                    cantidad= cantidad_plato,
+                    comentarios= comentarios_plato,
+                    estado="Pendiente",
+                    subtotal= cantidad_plato * precio
+                };
+                _context.Detalle_Pedido.Add(detalle_p);
+                _context.SaveChanges();
+        }
+        
+
+        return View("~/Views/Pedido_Local/Create.cshtml");
+    }
+    [HttpPost]
+    public IActionResult GuardarCombos(string comentarios,string tipo_item, decimal precio, int item_id, int cantidad)
+    {
+        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
+        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
+
+
+
+
+        if (mesaLibre != null)
+        {
+            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
+            ViewBag.idMesa = mesaLibre.Value;
+        }
+
+        if (mesaOCupada != null)
+        {
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
+
+            if (pedido != null)
+            {
+                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
+                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
+                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
+
+                ViewBag.nombreCliente = pedido.nombre_cliente;
+                ViewBag.idMesero = pedido.id_mesero;
+                ViewBag.idMesa = pedido.id_mesa;
+            }
+        }
+
+        var datos_cliente = _context.Pedido_Local
+                         .OrderByDescending(p => p.id_pedido)
+                         .FirstOrDefault();
+
+        int id_pedido = datos_cliente.id_pedido;
+        
+
+        if(cantidad > 0)
+        {
+            var detalle_p = new Detalle_Pedido
+                {
+                    encabezado_id = id_pedido,
+                    tipo_venta = "Local",
+                    tipo_Item= tipo_item,
+                    item_id= item_id,
+                    cantidad= cantidad,
+                    comentarios= comentarios,
+                    estado="Pendiente",
+                    subtotal= cantidad* precio
+                };
+                _context.Detalle_Pedido.Add(detalle_p);
+                _context.SaveChanges();
+        }
+        
+
+        return View("~/Views/Pedido_Local/Create.cshtml");
+    }
 
 
 }

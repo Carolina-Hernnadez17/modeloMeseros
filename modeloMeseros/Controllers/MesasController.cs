@@ -159,7 +159,7 @@ namespace modeloMeseros.Controllers
             }
 
             mesa.estado = 1;  // 1 representa "ocupado"
-            mesa.disponibilidad = "ocupado";  
+            mesa.disponibilidad = "ocupado";
 
             try
             {
@@ -177,8 +177,11 @@ namespace modeloMeseros.Controllers
                     throw;
                 }
             }
+            HttpContext.Session.SetInt32("id_mesa", id);
 
-            return RedirectToAction(nameof(Index));
+
+            //return RedirectToAction(nameof(Index));
+            return RedirectToAction("Create", "Pedido_Local");
         }
 
 
@@ -201,6 +204,15 @@ namespace modeloMeseros.Controllers
         private bool mesasExists(int id)
         {
             return _context.mesas.Any(e => e.id == id);
+        }
+
+        public IActionResult BuscarPedido(int id)
+        {
+
+
+            HttpContext.Session.SetInt32("id_mesaOcupada", id);
+
+            return RedirectToAction("Create", "Pedido_Local");
         }
 
 
