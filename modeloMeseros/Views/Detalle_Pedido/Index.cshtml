@@ -1,148 +1,70 @@
-﻿@model IEnumerable<modeloMeseros.Models.Detalle_Pedido>
+﻿@model modeloMeseros.Models.DetallePedidoViewModel
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/LayoutVertical.cshtml";
-   
-    
 }
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Detalles del pedido</title>
-        <link rel="stylesheet" href="~/css_E/StyleSheet.css">
-    </head>
-    <body>
-        <div class="section-detalles-pedido">
-            <h1 class="titulo-cliente">Detalle de del pedido</h1>
-        
-            <div class="section-detalle-cliente d-flex">
-                <div class="section-input">
-                    <h5> Nombre del cliente:</h5>
-                    <div class="input-group input-group-sm mb-5">
-                    <input class="form-text-pedido " type="text" value="">
-                    </div>
-                </div>
-                <div class="section-input">
-                    <h5> N° de Mesa</h5>
-                    <div class="input-group input-group-sm mb-5">
-                    <input class="form-text-pedido " type="text" value="">
-                    </div>
-                </div>
-                <div class="section-input">
-                    <h5> ID Mesero:</h5>
-                    <div class="input-group input-group-sm mb-5">
-                        <input class="form-text-pedido " type="text" value="" >
-                    </div>
+<head>
+    <meta charset="utf-8" />
+    <title>Detalles del pedido</title>
+    <link rel="stylesheet" href="~/css_E/StyleSheet.css">
+</head>
+<body>
+    <div class="section-detalles-pedido">
+        <h1 class="titulo-cliente">Detalle de del pedido</h1>
+
+        <div class="section-detalle-cliente d-flex">
+            <div class="section-input">
+                <h5>Nombre del cliente:</h5>
+                <div class="input-group input-group-sm mb-5">
+                    <input class="form-text-pedido" type="text" value="@Model.NombreCliente" readonly>
                 </div>
             </div>
-            <h1 class="titulo-orden">Detalle de la orden</h1>
-            
-            <div class="section-division"></div>
+            <div class="section-input">
+                <h5>N° de Mesa:</h5>
+                <div class="input-group input-group-sm mb-5">
+                    <input class="form-text-pedido" type="text" value="@Model.IdMesa" readonly>
+                </div>
+            </div>
+            <div class="section-input">
+                <h5>ID Mesero:</h5>
+                <div class="input-group input-group-sm mb-5">
+                    <input class="form-text-pedido" type="text" value="@Model.IdMesero" readonly>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="titulo-orden">Detalle de la orden</h1>
+
+        <div class="section-division"></div>
+        @foreach (var detalle in Model.Detalles)
+        {
             <table>
                 <tr>
                     <td class="col-md-3">
-                        <img class="img-plato" src="https://i.ibb.co/Q7Mzswb0/pixzolo-photography-O3wkh2j-Zyo-unsplash.jpg" 
-                        alt="pixzolo-photography-O3wkh2j-Zyo-unsplash" >
+                        <img class="img-plato" src="https://i.ibb.co/Q7Mzswb0/pixzolo-photography-O3wkh2j-Zyo-unsplash.jpg"
+                             alt="pixzolo-photography-O3wkh2j-Zyo-unsplash">
                     </td>
                     <td class="col-md-10 px-5">
-                        <h3>Nombre del platillo</h3>
-                        <p>Aqui va la descripcion del platillo</p>
-                    
+                        <h3>@detalle.NombrePlatillo</h3>
+                        <p>@detalle.DescripcionPlatillo</p>
                     </td>
                     <td>
                         <p class="comentario">Comentarios</p>
                     </td>
                     <td>
-                        <button class="image-button " onclick="alert('Button clicked!')">
-                            <img src="https://i.ibb.co/0pkkF1GN/puntos.png" alt="puntos" border="0" >
+                        <button class="image-button" onclick="alert('Button clicked!')">
+                            <img src="https://i.ibb.co/0pkkF1GN/puntos.png" alt="puntos" border="0">
                         </button>
                     </td>
                 </tr>
             </table>
-            <hr>
-		    <button class="boton-guardar"> Ordenar </button>
-        </div>
-        
-        
-    </body>
-</html>
-
-
-
-
-@* <h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Detalle del cliente</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.encabezado_id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.tipo_venta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.tipo_Item)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.item_id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.cantidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.comentarios)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.estado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.subtotal)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.encabezado_id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.tipo_venta)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.tipo_Item)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.item_id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.cantidad)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.comentarios)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.estado)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.subtotal)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.id_detalle_pedido">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.id_detalle_pedido">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.id_detalle_pedido">Delete</a>
-                </td>
-            </tr>
         }
-    </tbody>
-</table>
- *@
+        <hr>
+        <button class="boton-guardar">Ordenar</button>
+    </div>
+</body>
+</html>

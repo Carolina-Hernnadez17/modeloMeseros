@@ -21,9 +21,42 @@ namespace modeloMeseros.Controllers
         // GET: Detalle_Pedido
         public async Task<IActionResult> Index()
         {
-           
-                                 
-            return View(await _context.Detalle_Pedido.ToListAsync());
+            var idMesa = HttpContext.Session.GetInt32("idMesa");
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == idMesa && d.estado == "Abierta");
+
+            string nombreCliente = pedido.nombre_cliente;
+            int idMesero = pedido.id_mesero;
+            int idPedido = pedido.id_pedido;
+
+            var detallesPedido = await _context.Detalle_Pedido
+                .Where(d => d.encabezado_id == idPedido)
+                .ToListAsync();
+
+            var detallesConPlatillo = detallesPedido.Select(detalle =>
+            {
+                var plato = _context.platos.FirstOrDefault(p => p.id == detalle.item_id);
+                var combo = _context.combos.FirstOrDefault(c => c.id == detalle.item_id);
+
+                return new DetalleConPlatilloViewModel
+                {
+                    DetallePedidoId = detalle.id_detalle_pedido,
+                    NombrePlatillo = plato?.nombre ?? combo?.nombre ?? "Item desconocido",
+                    DescripcionPlatillo = plato?.descripcion ?? combo?.descripcion ?? "Descripción no disponible",
+                    Comentarios = detalle.comentarios
+                };
+            }).ToList();
+
+
+
+            var model = new DetallePedidoViewModel
+            {
+                IdMesa = idMesa,
+                NombreCliente = nombreCliente,
+                IdMesero = idMesero,
+                Detalles = detallesConPlatillo
+            };
+
+            return View(model);
         }
 
         // GET: Detalle_Pedido/Details/5
