@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using modeloMeseros.Models;
 using System;
 using System.Linq;
@@ -18,10 +19,22 @@ public class Pedido_LocalController : Controller
         // Obtener la hora actual como TimeSpan
         var horaActual = DateTime.Now.TimeOfDay;
 
-        // Obtener las listas filtradas
+        // Obtener las listas filtradas por menú y hora
         var platos = ObtenerPlatos(tipoMenu, horaActual).ToList();
         var combos = ObtenerCombos(tipoMenu, horaActual).ToList();
         var promociones = ObtenerPromociones(tipoMenu, horaActual).ToList();
+
+        // 🔽 Filtrar por ID de combo si se seleccionó
+        if (tipoCombo.HasValue)
+        {
+            combos = combos.Where(c => c.id == tipoCombo.Value).ToList();
+        }
+
+        // 🔽 Filtrar por ID de promoción si se seleccionó
+        if (tipoPromocion.HasValue)
+        {
+            promociones = promociones.Where(p => p.id == tipoPromocion.Value).ToList();
+        }
 
         // Si no hay platos disponibles, mostrar mensaje de error
         if (!platos.Any())
@@ -40,13 +53,14 @@ public class Pedido_LocalController : Controller
 
         // Pasar los filtros seleccionados a la vista
         ViewBag.TipoMenu = tipoMenu;
-        ViewBag.ListaCombos = combos;
-        ViewBag.ListaPromociones = promociones;
+        ViewBag.ListaCombos = ObtenerCombos(tipoMenu, horaActual).ToList(); // Todos los combos para el menú (sin filtrar por ID)
+        ViewBag.ListaPromociones = ObtenerPromociones(tipoMenu, horaActual).ToList(); // Todas las promos para el menú
         ViewBag.SelectedCombo = tipoCombo;
         ViewBag.SelectedPromocion = tipoPromocion;
 
         return View("~/Views/Pedido_Local/Create.cshtml", model);
     }
+
 
     // Método privado para obtener platos filtrados
     private IEnumerable<platos> ObtenerPlatos(string tipoMenu, TimeSpan horaActual)
@@ -114,6 +128,34 @@ public class Pedido_LocalController : Controller
                 horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  // Comprobamos que la hora actual esté dentro del rango permitido
                 horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())       // Comprobamos que la hora actual esté dentro del rango permitido
             .Select(x => x.p);  // Seleccionamos solo la entidad de la promoción
+    }
+
+    [HttpPost]
+    public ActionResult AbrirCuenta(PedidoPlatosViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
+            return View("~/Views/Pedido_Local/Create.cshtml");
+        }
+
+        model.Pedido.fechaApertura = DateTime.Now;
+        model.Pedido.estado = "Abierta";
+
+        try
+        {
+            _context.Pedido_Local.Add(model.Pedido);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+            return View("~/Views/Pedido_Local/Create.cshtml", model);
+        }
     }
 
 
