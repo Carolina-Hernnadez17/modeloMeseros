@@ -17,39 +17,7 @@ public class Pedido_LocalController : Controller
 
     public IActionResult Create(string tipoMenu, int? tipoCombo, int? tipoPromocion)
     {
-
-
-        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
-        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
-
-        if (mesaLibre != null)
-        {
-
-            HttpContext.Session.Remove("id_mesa");
-            HttpContext.Session.Remove("nombreCliente");
-            HttpContext.Session.Remove("idMesero");
-            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
-            ViewBag.idMesa = mesaLibre.Value;
-        }
-
-        if (mesaOCupada != null)
-        {
-            HttpContext.Session.Remove("id_mesaOcupada");
-            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
-
-            if (pedido != null)
-            {
-                
-                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
-                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
-                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
-
-                ViewBag.nombreCliente = pedido.nombre_cliente;
-                ViewBag.idMesero = pedido.id_mesero;
-                ViewBag.idMesa = pedido.id_mesa;
-            }
-        }
-       
+        verifiacrMesa();
 
         // Obtener la hora actual como TimeSpan
         var horaActual = DateTime.Now.TimeOfDay;
@@ -100,6 +68,8 @@ public class Pedido_LocalController : Controller
     // Método privado para obtener platos filtrados
     private IEnumerable<platos> ObtenerPlatos(string tipoMenu, TimeSpan horaActual)
     {
+        
+
         // Obtener los datos de la base de datos
         var query = _context.platos
             .Join(_context.menu_plato, p => p.id, mp => mp.plato_id, (p, mp) => new { p, mp })
@@ -121,6 +91,31 @@ public class Pedido_LocalController : Controller
     // Método privado para obtener combos filtrados
     private IEnumerable<combos> ObtenerCombos(string tipoMenu, TimeSpan horaActual)
     {
+        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
+        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
+
+        if (mesaLibre != null)
+        {
+            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
+            ViewBag.idMesa = mesaLibre.Value;
+        }
+
+        if (mesaOCupada != null)
+        {
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
+
+            if (pedido != null)
+            {
+                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
+                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
+                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
+
+                ViewBag.nombreCliente = pedido.nombre_cliente;
+                ViewBag.idMesero = pedido.id_mesero;
+                ViewBag.idMesa = pedido.id_mesa;
+            }
+        }
+
         var query = _context.combos
             .Join(_context.menu_combo, c => c.id, mc => mc.combo_id, (c, mc) => new { c, mc })
             .Join(_context.menu, temp => temp.mc.menu_id, m => m.id, (temp, m) => new { temp.c, m, temp.mc })
@@ -142,7 +137,9 @@ public class Pedido_LocalController : Controller
     // Método privado para obtener promociones filtradas
     private IEnumerable<promociones> ObtenerPromociones(string tipoMenu, TimeSpan horaActual)
     {
-        var query = _context.promociones
+        verifiacrMesa();
+
+         var query = _context.promociones
             .Join(_context.combo_promocion, p => p.id, cp => cp.promocion_id, (p, cp) => new { p, cp })
             .Join(_context.combos, temp => temp.cp.combo_id, c => c.id, (temp, c) => new { temp.p, c, temp.cp })
             .Join(_context.menu_combo, temp => temp.c.id, mc => mc.combo_id, (temp, mc) => new { temp.p, temp.c, temp.cp, mc })
@@ -168,6 +165,8 @@ public class Pedido_LocalController : Controller
     [HttpPost]
     public ActionResult AbrirCuenta(PedidoPlatosViewModel model)
     {
+
+
 
         model.Pedido.estado = "Abierta";
         foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
@@ -216,6 +215,9 @@ public class Pedido_LocalController : Controller
             ViewBag.idMesa = model.Pedido.id_mesa;
             ViewBag.idMesero = model.Pedido.id_mesero;
 
+
+
+
             // Comprobar cuántos registros se han guardado
             if (result > 0)
             {
@@ -240,34 +242,7 @@ public class Pedido_LocalController : Controller
     [HttpPost]
     public IActionResult GuardarPlatos(string comentarios_plato,string tipo_item, decimal precio, int item_id, int cantidad_plato)
     {
-        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
-        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
-
-
-
-
-        if (mesaLibre != null)
-        {
-            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
-            ViewBag.idMesa = mesaLibre.Value;
-        }
-
-        if (mesaOCupada != null)
-        {
-            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
-
-            if (pedido != null)
-            {
-                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
-                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
-                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
-
-                ViewBag.nombreCliente = pedido.nombre_cliente;
-                ViewBag.idMesero = pedido.id_mesero;
-                ViewBag.idMesa = pedido.id_mesa;
-            }
-        }
-
+        verifiacrMesa();
         var datos_cliente = _context.Pedido_Local
                          .OrderByDescending(p => p.id_pedido)
                          .FirstOrDefault();
@@ -298,33 +273,7 @@ public class Pedido_LocalController : Controller
     [HttpPost]
     public IActionResult GuardarCombos(string comentarios,string tipo_item, decimal precio, int item_id, int cantidad)
     {
-        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
-        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
-
-
-
-
-        if (mesaLibre != null)
-        {
-            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
-            ViewBag.idMesa = mesaLibre.Value;
-        }
-
-        if (mesaOCupada != null)
-        {
-            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
-
-            if (pedido != null)
-            {
-                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
-                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
-                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
-
-                ViewBag.nombreCliente = pedido.nombre_cliente;
-                ViewBag.idMesero = pedido.id_mesero;
-                ViewBag.idMesa = pedido.id_mesa;
-            }
-        }
+       
 
         var datos_cliente = _context.Pedido_Local
                          .OrderByDescending(p => p.id_pedido)
@@ -354,6 +303,44 @@ public class Pedido_LocalController : Controller
         return View("~/Views/Pedido_Local/Create.cshtml");
     }
 
+    
+    public IActionResult EnviarId(int id_mesa)
+    {
+        
+        HttpContext.Session.SetInt32("IdPedido" , id_mesa);
 
+        return View("~/Views/Detalle_Pedido/Index.cshtml");
+    }
+
+    public void verifiacrMesa()
+    {
+        int? mesaLibre = HttpContext.Session.GetInt32("id_mesa");
+        int? mesaOCupada = HttpContext.Session.GetInt32("id_mesaOcupada");
+
+
+        if (mesaLibre != null)
+        {
+            
+            HttpContext.Session.SetInt32("idMesa", mesaLibre.Value);
+            ViewBag.idMesa = mesaLibre.Value;
+        }
+
+        if (mesaOCupada != null)
+        {
+            
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_mesa == mesaOCupada && d.estado == "Abierta");
+
+            if (pedido != null)
+            {
+                HttpContext.Session.SetString("nombreCliente", pedido.nombre_cliente);
+                HttpContext.Session.SetInt32("idMesero", pedido.id_mesero);
+                HttpContext.Session.SetInt32("idMesa", pedido.id_mesa);
+
+                ViewBag.nombreCliente = pedido.nombre_cliente;
+                ViewBag.idMesero = pedido.id_mesero;
+                ViewBag.idMesa = pedido.id_mesa;
+            }
+        }
+    }
 }
 

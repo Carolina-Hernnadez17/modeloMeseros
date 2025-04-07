@@ -21,6 +21,8 @@ namespace modeloMeseros.Controllers
         // GET: Detalle_Pedido
         public async Task<IActionResult> Index()
         {
+           
+                                 
             return View(await _context.Detalle_Pedido.ToListAsync());
         }
 

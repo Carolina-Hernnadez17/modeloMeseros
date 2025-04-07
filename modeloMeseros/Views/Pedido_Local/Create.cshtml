@@ -116,11 +116,14 @@
                     <input asp-for="Pedido.id_mesero" type="number" class="form-control" value="@ViewBag.idMesero" />
                     <span asp-validation-for="Pedido.id_mesero" class="text-danger"></span>
                 </div>
+                
             </div>
 
             <!-- Campo oculto para confirmar que el dato se envía -->
           
             <input type="hidden" asp-for="Pedido.estado" value="Abierta" />
+            <input type="hidden" asp-for="Pedido.id_mesa" value="" />
+           
 
             <div class="text-center">
                 <button type="submit" class="btn btn-danger" name="abrirCuenta">Abrir Cuenta</button>
@@ -232,7 +235,11 @@
         </div>
 
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-danger">Confirmar Pedido</button>
+            <form asp-action="EnviarId"  >
+                <input asp-for="Pedido.id_mesa" type="hidden" name="id_mesa" value="@ViewBag.idMesa" />
+				<button   type="submit" class="btn btn-danger">Confirmar Pedido</button>
+            </form>
+           
         </div>
         
     </div>
