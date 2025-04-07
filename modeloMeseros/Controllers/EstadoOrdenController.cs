@@ -17,6 +17,19 @@ namespace modeloMeseros.Controllers
 
         public IActionResult EstadoDeOrden()
         {
+            var pedidos = _context.Pedido_Local
+            .Where(p => p.estado == "Abierta")
+            .ToList();
+
+            var pedidoIds = pedidos.Select(p => p.id_pedido).ToList();
+
+            var detalles = _context.Detalle_Pedido
+                .Where(d => pedidoIds.Contains(d.encabezado_id)  && d.tipo_venta == "Local")
+                .ToList();
+
+            ViewBag.Pedidos = pedidos;
+            ViewBag.Detalles_Pedido = detalles;
+
             return View();
         }
 
@@ -24,110 +37,41 @@ namespace modeloMeseros.Controllers
         public IActionResult BuscarPedidos(string nombreCliente, int numeroMesa)
         {
             var pedidos = _context.Pedido_Local
-                .Where(p => p.nombre_cliente == nombreCliente && p.id_mesa == numeroMesa)
+                .Where(p => p.nombre_cliente == nombreCliente && p.id_mesa == numeroMesa && p.estado == "Abierta")
                 .ToList();
 
+            var pedidoIds = pedidos.Select(p => p.id_pedido).ToList();
+
             var detalles = _context.Detalle_Pedido
-                .Where(d => pedidos.Select(p => p.id_pedido).Contains(d.encabezado_id))
+                .Where(d => pedidoIds.Contains(d.encabezado_id) && d.tipo_venta == "Local")
                 .ToList();
 
             ViewBag.Pedidos = pedidos;
             ViewBag.Detalles_Pedido = detalles;
 
-            return View("EstadoDeOrden"); 
+            return View("EstadoDeOrden");
         }
-        //Me falta arreglar esto 
-        [HttpPost]
-        public IActionResult CambiarEstado(int idPedido)
-        {
-            var pedido = _context.Pedido_Local.FirstOrDefault(p => p.id_pedido == idPedido);
 
-            if (pedido != null)
+        [HttpPost]
+        public IActionResult CambiarEstadoDetalle(int idDetalle, string nuevoEstado)
+        {
+            var detalle = _context.Detalle_Pedido.FirstOrDefault(d => d.id_detalle_pedido == idDetalle);
+
+            if (detalle != null)
             {
-                pedido.estado = "Cerrada";  
-                _context.SaveChanges();
+                if (nuevoEstado == "Cancelado" && detalle.estado != "Pendiente")
+                {
+                    TempData["Error"] = "Solo se puede cancelar un pedido en estado Pendiente.";
+                }
+                else
+                {
+                    detalle.estado = nuevoEstado;
+                    _context.SaveChanges();
+                }
             }
 
-            return RedirectToAction("EstadoDeOrden"); 
+            return RedirectToAction("EstadoDeOrden");
         }
-        //// GET: EstadoOrdenController
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
-        ////public ActionResult EstadoDeOrden()
-        ////{
-        ////    return View();
-        ////}
 
-
-        //// GET: EstadoOrdenController/Details/5
-        //public ActionResult Details(int id)
-        //{
-        //    return View();
-        //}
-
-        //// GET: EstadoOrdenController/Create
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        //// POST: EstadoOrdenController/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create(IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        //// GET: EstadoOrdenController/Edit/5
-        //public ActionResult Edit(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: EstadoOrdenController/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        //// GET: EstadoOrdenController/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: EstadoOrdenController/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }

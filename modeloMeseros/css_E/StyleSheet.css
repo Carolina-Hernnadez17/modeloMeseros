@@ -1,18 +1,21 @@
 ﻿body {
     background: #FDFBF0;
+    padding-bottom:30px;
+   
 }
 
 .boton-guardar {
     width: 100%;
     border-radius: 10px;
-    padding: 10px;
+    padding: 25px;
     background: #FEF7FF;
     border: none;
-    box-shadow: 5px 5px 5px gray;
+    box-shadow: 5px 5px 5px black;
+    
 }
 .comentario {
     text-align: right;
-    padding: 40px;
+    padding: 25px;
     background: #FEF7FF;
     border-radius: 20px;
     box-shadow: 3px 3px 3px 2px gray;
@@ -25,9 +28,10 @@
     margin-bottom: 20px;
 }
 
-.section-detalles-pedido{
-    margin-bottom:50px;
+.section-detalles-pedido {
+   
     padding: 30px;
+    
 }
 
 .descripcion-plato {
@@ -37,15 +41,19 @@
     box-shadow: 5px 5px 5px gray;
 }
 .form-text-pedido {
-    font-size: 20px;
-    padding: 10px;
+    font-size: 15px;
+    padding: 8px;
     border-radius: 10px;
 }
-hr {
-    width: 100%; /* Ajusta el ancho de la línea */
-    height: 50%; /* Define el grosor de la línea */
-    background-color: #000000; /* Cambia el color de la línea */
+
+.section-division {
+    width: 100%;
     
+    padding: 20px;
+    background: #FEF7FF;
+    margin-bottom: 15px;
+    box-shadow: 2px 1px 1px 2px #ede7f6;
+    border-radius: 15px;
 } 
 .section-input {
     margin: 20px;
@@ -64,8 +72,8 @@ td {
     width: 50%;
 }
 .titulo-orden{
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 30px;
+    padding-bottom: 20px;
 }
 .titulo-cliente {
     padding-top: 50px;
