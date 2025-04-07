@@ -32,21 +32,39 @@ namespace modeloMeseros.Controllers
                 .Where(d => d.encabezado_id == idPedido)
                 .ToListAsync();
 
-            var detallesConPlatillo = detallesPedido.Select(detalle =>
+            var detallesConPlatillo = new List<DetalleConPlatilloViewModel>();
+
+            // Procesar los detalles que son platos
+            foreach (var detalle in detallesPedido)
             {
-                var plato = _context.platos.FirstOrDefault(p => p.id == detalle.item_id);
-                var combo = _context.combos.FirstOrDefault(c => c.id == detalle.item_id);
-
-                return new DetalleConPlatilloViewModel
+                var plato = await _context.platos.FirstOrDefaultAsync(p => p.id == detalle.item_id);
+                if (plato != null)
                 {
-                    DetallePedidoId = detalle.id_detalle_pedido,
-                    NombrePlatillo = plato?.nombre ?? combo?.nombre ?? "Item desconocido",
-                    DescripcionPlatillo = plato?.descripcion ?? combo?.descripcion ?? "Descripción no disponible",
-                    Comentarios = detalle.comentarios
-                };
-            }).ToList();
+                    detallesConPlatillo.Add(new DetalleConPlatilloViewModel
+                    {
+                        DetallePedidoId = detalle.id_detalle_pedido,
+                        NombrePlatillo = plato.nombre,
+                        DescripcionPlatillo = plato.descripcion,
+                        Comentarios = detalle.comentarios
+                    });
+                }
+            }
 
-
+            // Procesar los detalles que son combos
+            foreach (var detalle in detallesPedido)
+            {
+                var combo = await _context.combos.FirstOrDefaultAsync(c => c.id == detalle.item_id);
+                if (combo != null)
+                {
+                    detallesConPlatillo.Add(new DetalleConPlatilloViewModel
+                    {
+                        DetallePedidoId = detalle.id_detalle_pedido,
+                        NombrePlatillo = combo.nombre,
+                        DescripcionPlatillo = combo.descripcion,
+                        Comentarios = detalle.comentarios
+                    });
+                }
+            }
 
             var model = new DetallePedidoViewModel
             {
