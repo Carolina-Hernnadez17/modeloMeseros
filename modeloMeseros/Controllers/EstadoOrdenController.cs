@@ -73,5 +73,81 @@ namespace modeloMeseros.Controllers
             return RedirectToAction("EstadoDeOrden");
         }
 
+        //[HttpPost]
+        //public IActionResult CambiarEstadoPedido(int idPedido, string nuevoEstado)
+        //{
+        //    var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_pedido == idPedido);
+
+        //    var detalle = _context.Detalle_Pedido.ToList(d => d.encabezado_id == idPedido && d.tipo_venta == "Local");
+
+        //    if (detalle != null)
+        //    {
+        //        if (detalle.estado == "Entregado" || detalle.estado =="Cancelado")
+        //        {
+        //            if (pedido != null)
+        //            {
+        //                pedido.estado = nuevoEstado;
+        //                _context.SaveChanges();
+        //            }
+
+
+        //        }
+        //        else
+        //        {
+        //            TempData["Error"] = "Solo se puede cerrar la cuenta si " +
+        //                "el estado de los detalles es Entregado.";
+        //        }
+
+        //    }
+
+        //    return RedirectToAction("EstadoDeOrden");
+        //}
+        public IActionResult CambiarEstadoPedido(int idPedido, string nuevoEstado, int idMesa)
+        {
+            var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_pedido == idPedido && d.id_mesa == idMesa);
+
+            var mesa = _context.mesas.FirstOrDefault(d => d.id == idMesa);
+
+            var detalles = _context.Detalle_Pedido
+                .Where(d => d.encabezado_id == idPedido && d.tipo_venta == "Local")
+                .ToList();
+
+            if (pedido == null)
+            {
+                TempData["Error"] = "El pedido no fue encontrado.";
+                return RedirectToAction("EstadoDeOrden");
+            }
+            else
+            {
+                if (detalles.Count == 0)
+                {
+                    TempData["Error"] = "No hay detalles asociados al pedido.";
+                    return RedirectToAction("EstadoDeOrden");
+                }
+                else
+                {
+                    bool todosEntregadosOCancelados = detalles.All(d =>
+                    d.estado == "Entregado" || d.estado == "Cancelado" && d.tipo_venta == "Local");
+
+                    if (todosEntregadosOCancelados)
+                    {
+                        pedido.estado = nuevoEstado;
+                        mesa.estado = 0;
+                        mesa.disponibilidad = "libre";
+                        _context.SaveChanges();
+                        TempData["Mensaje"] = "Estado del pedido actualizado correctamente.";
+
+                    }
+                    else
+                    {
+                        TempData["Error"] = "Solo se puede cerrar la cuenta si todos los detalles están en estado 'Entregado' o 'Cancelado'.";
+                    }
+                }
+                
+            }
+
+            return RedirectToAction("EstadoDeOrden");
+        }
+
     }
 }
