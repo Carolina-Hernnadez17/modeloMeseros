@@ -80,7 +80,7 @@
                 </div>
 
             </div>
-
+            
             <!-- Campo oculto para confirmar que el dato se envía -->
 
             <input type="hidden" asp-for="Pedido.estado" value="Abierta" />
@@ -92,6 +92,7 @@
             </div>
         </form>
 
+        <br/>
         <!-- Formulario de filtros -->
         <form asp-action="Create" method="get">
             <div class="row mb-3">
@@ -105,28 +106,7 @@
                         <option value="temporada" selected="@(ViewBag.TipoMenu == "temporada" ? "selected" : null)">Temporada</option>
                     </select>
                 </div>
-
-                <div class="col">
-                    <label class="form-label">Seleccionar Combo:</label>
-                    <select class="form-control" name="tipoCombo" onchange="this.form.submit()">
-                        <option value="">Seleccione un combo</option>
-                        <option value="desayuno" selected="@(ViewBag.TipoCombo == "desayuno" ? "selected" : null)">Desayuno</option>
-                        <option value="almuerzo" selected="@(ViewBag.TipoCombo == "almuerzo" ? "selected" : null)">Almuerzo</option>
-                        <option value="cena" selected="@(ViewBag.TipoCombo == "cena" ? "selected" : null)">Cena</option>
-                        <option value="temporada" selected="@(ViewBag.TipoCombo == "temporada" ? "selected" : null)">Temporada</option>
-                    </select>
-                </div>
-
-                <div class="col">
-                    <label class="form-label">Seleccionar Promoción:</label>
-                    <select class="form-control" name="tipoPromocion" onchange="this.form.submit()">
-                        <option value="">Seleccione una promoción</option>
-                        <option value="desayuno" selected="@(ViewBag.TipoPromocion == "desayuno" ? "selected" : null)">Desayuno</option>
-                        <option value="almuerzo" selected="@(ViewBag.TipoPromocion == "almuerzo" ? "selected" : null)">Almuerzo</option>
-                        <option value="cena" selected="@(ViewBag.TipoPromocion == "cena" ? "selected" : null)">Cena</option>
-                        <option value="temporada" selected="@(ViewBag.TipoPromocion == "temporada" ? "selected" : null)">Temporada</option>
-                    </select>
-                </div>
+                
             </div>
         </form>
         <!-- Formulario de apertura de cuenta -->
@@ -238,6 +218,8 @@
                 </tbody>
             </table>
         </div>
+        <br />
+        <h2>Promociones</h2>
         <div class="table-container">
             <table class="table table-striped table-bordered table-hover m-0">
                 <thead class="table-light">
@@ -250,41 +232,17 @@
                 </thead>
                 <tbody>
                     <form asp-action="GuardarPlatos" method="post">
-                        @if (Model.ListaPromocion != null && Model.ListaPromocion.Any())
+                        @if (Model?.ListaPromocion?.Any() == true)
                         {
-                            <h3>Promociones</h3>
-                            <table class="table table-striped table-bordered table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Descripción</th>
-                                        <th>Descuento</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var promocion in Model.ListaPromocion)
-                                    {
-                                        <tr>
-                                            <td>@promocion.nombre</td>
-                                            <td>@promocion.descripcion</td>
-                                            <td>@promocion.descuento</td>
-                                            <td class="text-center">
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm me-1" onclick="cambiarCantidad('@promocion.id', -1)">−</button>
-                                                    <input type="number" name="cantidades[@promocion.id]" id="cantidad-@promocion.id" class="form-control text-center" value="0" style="width: 60px;" readonly />
-                                                    <button type="button" class="btn btn-outline-success btn-sm ms-1" onclick="cambiarCantidad('@promocion.id', 1)">+</button>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <input type="text" name="comentarios[@promocion.id]" class="form-control" placeholder="Comentario..." />
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn bg-danger btn-sm me-1" onclick="cambiarCantidad('@promocion.id', -1)">Agregar</button>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                            @foreach (var promocion in Model.ListaPromocion)
+                            {
+                            <tr>
+                                <td>@promocion.nombre</td>
+                                <td>@promocion.descripcion</td>
+                                <td>@promocion.descuento</td>
+
+                            </tr>
+                            }
                         }
                     </form>
 
