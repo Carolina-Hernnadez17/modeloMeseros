@@ -84,16 +84,16 @@
                                                     @if (detalle.estado == "Finalizado")
                                                     {
                                                         <button type="submit" name="nuevoEstado" value="Entregado"
-                                                                class="btn btn-outline-danger btn-sm"
-                                                                onclick="return confirm('¿Está seguro de que desea marcar este pedido como ENTREGADO?');">
+                                                        class="btn btn-outline-danger btn-sm"
+                                                        onclick="return confirm('¿Está seguro de que desea marcar este pedido como ENTREGADO?');">
                                                             Entregar pedido
                                                         </button>
                                                     }
                                                     @if (detalle.estado == "Pendiente")
                                                     {
                                                         <button type="submit" name="nuevoEstado" value="Cancelado"
-                                                                class="btn btn-outline-dark btn-sm"
-                                                                onclick="return confirm('¿Está seguro de que desea marcar este pedido como CANCELADO?');">
+                                                        class="btn btn-outline-dark btn-sm"
+                                                        onclick="return confirm('¿Está seguro de que desea marcar este pedido como CANCELADO?');">
                                                             Cancelar pedido
                                                         </button>
                                                     }
@@ -109,6 +109,33 @@
                     {
                         <p><em>No hay detalles activos para este pedido.</em></p>
                     }
+                    <form asp-action="CambiarEstadoPedido" method="post">
+                        <input type="hidden" name="idPedido" value="@pedido.id_pedido" />
+                        <input type="hidden" name="nuevoEstado" value="Cerrada" />
+                        <input type="hidden" name="idMesa" value="@pedido.id_mesa" />
+
+                        @if (detallesPedido.Any())
+                        {
+
+                            var detallesLo = detallesPedido.Where(d => d.encabezado_id == @pedido.id_pedido && d.tipo_venta == "Local").ToList();
+
+                            int todos = detallesLo.Count(d =>
+                            d.estado == "Entregado" || d.estado == "Cancelado");
+                            if(todos > 0){
+
+                                bool todosEntregadosOCancelados = detallesLo.All(d =>
+                                d.estado == "Entregado" || d.estado == "Cancelado");
+
+                                if (todosEntregadosOCancelados)
+                                {
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-sync-alt"></i> Cambiar estado de pedido
+                                    </button>
+                                }
+                            }
+                        }
+                    </form>
+
                 </div>
             }
         </div>
