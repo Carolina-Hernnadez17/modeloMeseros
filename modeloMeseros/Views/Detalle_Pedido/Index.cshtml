@@ -45,7 +45,7 @@
             <table>
                 <tr>
                     <td class="col-md-3">
-                        <img class="img-plato" src="https://i.ibb.co/Q7Mzswb0/pixzolo-photography-O3wkh2j-Zyo-unsplash.jpg"
+                        <img class="img-plato" src="https://img.freepik.com/vector-premium/ilustracion-diseno-icono-comida-plato-o-bandeja_910989-988.jpg"
                              alt="pixzolo-photography-O3wkh2j-Zyo-unsplash">
                     </td>
                     <td class="col-md-10 px-5">
@@ -53,7 +53,7 @@
                         <p>@detalle.DescripcionPlatillo</p>
                     </td>
                     <td>
-                        <p class="comentario">Comentarios</p>
+                        <p class="comentario">@detalle.Comentarios</p>
                     </td>
                     <td>
                         <button class="image-button" onclick="alert('Button clicked!')">
@@ -63,8 +63,10 @@
                 </tr>
             </table>
         }
-        <hr>
-        <button class="boton-guardar">Ordenar</button>
+        <hr> 
+        <form asp-action="EstadoDeOrden" asp-controller="EstadoOrden" method="post">
+            <button type="submit" class="boton-guardar">Ordenar/button>
+        </form>
     </div>
 </body>
 </html>

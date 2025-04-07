@@ -285,7 +285,7 @@ public class Pedido_LocalController : Controller
         
         HttpContext.Session.SetInt32("IdPedido" , id_mesa);
 
-        return View("~/Views/Detalle_Pedido/Index.cshtml");
+        return RedirectToAction("Index", "Detalle_Pedido");
     }
 
     public void verifiacrMesa()
