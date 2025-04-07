@@ -8,7 +8,14 @@
 
             public List<categoria> ListaCategorias { get; set; } = new List<categoria>(); // Agregar esta lista
 
-       
+             
+                public List<combos> ListaCombos { get; set; } = new List<combos>();  // Evita que sea null
+
+           public List<promociones> ListaPromocion { get; set; } = new List<promociones>();  // Evita que sea null
+
+
+
+
 
 
 

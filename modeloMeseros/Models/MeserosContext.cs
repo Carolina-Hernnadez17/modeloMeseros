@@ -7,7 +7,7 @@ namespace modeloMeseros.Models
         public MeserosContext(DbContextOptions options) : base(options)
         { }
 
-        public DbSet<combo_promocion> promociones_promocion { get; set; }
+        public DbSet<combo_promocion> combo_promocion { get; set; }
         public DbSet<combos> combos { get; set; }
         public DbSet<Detalle_Pedido> Detalle_Pedido { get; set; }
         public DbSet<menu> menu { get; set; }

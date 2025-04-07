@@ -5,6 +5,8 @@
     Layout = "~/Views/Shared/LayoutVertical.cshtml";
 }
 
+<link href="@Url.Content("~/css_K/Style.css")" rel="stylesheet" />
+
 @if (Model == null)
 {
     <div class="alert alert-danger">No se pudo cargar la información del pedido.</div>
@@ -15,84 +17,199 @@
     <div class="alert alert-warning">@ViewBag.ErrorMessage</div>
 }
 
-<div class="d-flex">
-    <div class="container mt-4 bg-light p-4 rounded flex-grow-1">
-        <h2 class="mb-4">Abrir cuenta de los clientes</h2>
-        <form asp-action="Create" method="get">
-            <div class="row mb-3">
-                <div class="col">
-                    <label class="form-label">Seleccionar Menú:</label>
-                    <select class="form-control" name="tipoMenu" onchange="this.form.submit()">
-                        <option value="">Seleccione un menú</option>
-                        <option value="desayuno" selected="@(ViewBag.TipoMenu == "desayuno" ? "selected" : null)">Desayuno</option>
-                        <option value="almuerzo" selected="@(ViewBag.TipoMenu == "almuerzo" ? "selected" : null)">Almuerzo</option>
-                        <option value="cena" selected="@(ViewBag.TipoMenu == "cena" ? "selected" : null)">Cena</option>
-                        <option value="temporada" selected="@(ViewBag.TipoMenu == "temporada" ? "selected" : null)">Temporada</option>
-                    </select>
-                </div>
-            </div>
-        </form>
+<head>
+    <style>
+        .table-container {
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-        <form asp-action="Create" method="post" class="shadow-sm p-3 bg-white rounded">
-            <div class="row mb-3">
-                <div class="col">
-                    <label asp-for="Pedido.nombre_cliente" class="form-label">Nombre del Cliente:</label>
-                    <input asp-for="Pedido.nombre_cliente" class="form-control" />
-                    <span asp-validation-for="Pedido.nombre_cliente" class="text-danger"></span>
-                </div>
-                <div class="col">
-                    <label asp-for="Pedido.id_mesa" class="form-label">Nº de Mesa:</label>
-                    <input asp-for="Pedido.id_mesa" class="form-control" />
-                    <span asp-validation-for="Pedido.id_mesa" class="text-danger"></span>
-                </div>
-                <div class="col">
-                    <label asp-for="Pedido.id_mesero" class="form-label">ID Mesero:</label>
-                    <input asp-for="Pedido.id_mesero" class="form-control" />
-                    <span asp-validation-for="Pedido.id_mesero" class="text-danger"></span>
-                </div>
-            </div>
+            .table-container table {
+                border-collapse: separate;
+                border-spacing: 0 8px;
+                width: 100%;
+            }
 
-            <div class="mt-4">
+            .table-container tr {
+                background-color: #fefaed;
+                border-radius: 12px;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .table-container th,
+            .table-container td {
+                padding: 12px;
+                border: none;
+            }
+
+        .btn-custom {
+            background-color: #e34444;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex">
+        <div class="container mt-4 bg-light p-4 rounded flex-grow-1">
+            <h2 class="mb-4">Abrir cuenta de los clientes</h2>
+            <form asp-action="Create" method="get">
+                <div class="row mb-3">
+                    <!-- Filtro de Menú -->
+                    <div class="col">
+                        <label class="form-label">Seleccionar Menú:</label>
+                        <select class="form-control" name="tipoMenu" onchange="this.form.submit()">
+                            <option value="">Seleccione un menú</option>
+                            <option value="desayuno" selected="@(ViewBag.TipoMenu == "desayuno" ? "selected" : null)">Desayuno</option>
+                            <option value="almuerzo" selected="@(ViewBag.TipoMenu == "almuerzo" ? "selected" : null)">Almuerzo</option>
+                            <option value="cena" selected="@(ViewBag.TipoMenu == "cena" ? "selected" : null)">Cena</option>
+                            <option value="temporada" selected="@(ViewBag.TipoMenu == "temporada" ? "selected" : null)">Temporada</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro de Combo -->
+                    <div class="col">
+                        <label class="form-label">Seleccionar Combo:</label>
+                        <select class="form-control" name="tipoCombo" onchange="this.form.submit()">
+                            <option value="">Seleccione un combo</option>
+                            <option value="desayuno" selected="@(ViewBag.TipoCombo == "desayuno" ? "selected" : null)">Desayuno</option>
+                            <option value="almuerzo" selected="@(ViewBag.TipoCombo == "almuerzo" ? "selected" : null)">Almuerzo</option>
+                            <option value="cena" selected="@(ViewBag.TipoCombo == "cena" ? "selected" : null)">Cena</option>
+                            <option value="temporada" selected="@(ViewBag.TipoCombo == "temporada" ? "selected" : null)">Temporada</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro de Promoción -->
+                    <div class="col">
+                        <label class="form-label">Seleccionar Promoción:</label>
+                        <select class="form-control" name="tipoPromocion" onchange="this.form.submit()">
+                            <option value="">Seleccione una promoción</option>
+                            <option value="desayuno" selected="@(ViewBag.TipoPromocion == "desayuno" ? "selected" : null)">Desayuno</option>
+                            <option value="almuerzo" selected="@(ViewBag.TipoPromocion == "almuerzo" ? "selected" : null)">Almuerzo</option>
+                            <option value="cena" selected="@(ViewBag.TipoPromocion == "cena" ? "selected" : null)">Cena</option>
+                            <option value="temporada" selected="@(ViewBag.TipoPromocion == "temporada" ? "selected" : null)">Temporada</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <form asp-action="Create" method="post" class="shadow-sm p-3 bg-white rounded">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label asp-for="Pedido.nombre_cliente" class="form-label">Nombre del Cliente:</label>
+                        <input asp-for="Pedido.nombre_cliente" class="form-control" />
+                        <span asp-validation-for="Pedido.nombre_cliente" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="Pedido.id_mesa" class="form-label">Nº de Mesa:</label>
+                        <input asp-for="Pedido.id_mesa" class="form-control" />
+                        <span asp-validation-for="Pedido.id_mesa" class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="Pedido.id_mesero" class="form-label">ID Mesero:</label>
+                        <input asp-for="Pedido.id_mesero" class="form-control" />
+                        <span asp-validation-for="Pedido.id_mesero" class="text-danger"></span>
+                    </div>
+                </div>
+
                 <h2>Lista de Platos</h2>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model?.ListaPlatos != null && Model.ListaPlatos.Any())
-                        {
-                            @foreach (var plato in Model.ListaPlatos)
+                <div>
+                    <table class="table table-striped table-bordered table-hover table-container">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Precio</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.ListaPlatos != null && Model.ListaPlatos.Any())
+                            {
+                                @foreach (var plato in Model.ListaPlatos)
+                                {
+                                    <tr>
+                                        <td>@plato.nombre</td>
+                                        <td>@plato.descripcion</td>
+                                        <td>@plato.precio</td>
+                                        <td>
+                                            <form asp-action="AgregarComentario" method="post">
+                                                <input type="hidden" name="idPlato" value="@plato.id" />
+                                                <button type="submit" class="btn btn-custom btn-sm">Agregar Comentario</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
                             {
                                 <tr>
-                                    <td>@plato.id</td>
-                                    <td>@plato.nombre</td>
-                                    <td>@plato.descripcion</td>
-                                    <td>@plato.precio</td>
+                                    <td colspan="4" class="text-center">No hay platos disponibles para este filtro.</td>
                                 </tr>
                             }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="4" class="text-center">No hay platos disponibles para este menú.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Crear Pedido</button>
-            </div>
-        </form>
+                            @if (Model?.ListaCombos != null && Model.ListaCombos.Any())
+                            {
+                                @foreach (var combo in Model.ListaCombos)
+                                {
+                                    <tr>
+                                        <td>@combo.nombre</td>
+                                        <td>@combo.descripcion</td>
+                                        <td>@combo.precio</td>
+                                        <td>
+                                            <form asp-action="AgregarComentario" method="post">
+                                                <input type="hidden" name="idCombo" value="@combo.id" />
+                                                <button type="submit" class="btn btn-custom btn-sm">Agregar Comentario</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay combos disponibles para este filtro.</td>
+                                </tr>
+                            }
 
-        <div class="mt-3 text-center">
-            <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
+                            @if (Model?.ListaPromocion != null && Model.ListaPromocion.Any())
+                            {
+                                @foreach (var promocion in Model.ListaPromocion)
+                                {
+                                    <tr>
+                                        <td>@promocion.nombre</td>
+                                        <td>@promocion.descripcion</td>
+                                        <td>@promocion.descuento</td>
+                                        <td>
+                                            <form asp-action="AgregarComentario" method="post">
+                                                <input type="hidden" name="idPromocion" value="@promocion.id" />
+                                                <button type="submit" class="btn btn-custom btn-sm">Agregar Comentario</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center">No hay promociones disponibles para este filtro.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Crear Pedido</button>
+                </div>
+            </form>
+
+            <div class="mt-3 text-center">
+                <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
+            </div>
         </div>
     </div>
-</div>
+</body>

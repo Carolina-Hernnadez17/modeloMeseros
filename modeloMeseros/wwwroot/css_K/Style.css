@@ -1,0 +1,46 @@
+﻿.table-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+    .table-container table {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        width: 100%;
+    }
+
+    .table-container tr {
+        background-color: #fefaed;
+        border-radius: 12px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+        .table-container tr:first-child td:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        .table-container tr:first-child td:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        .table-container tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+
+        .table-container tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+
+    .table-container th,
+    .table-container td {
+        padding: 12px;
+        border: none;
+    }
+
+
+.btn-custom {
+    background-color: #e34444; /* El color personalizado */
+    color: white; /* Color del texto */
