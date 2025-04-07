@@ -72,36 +72,7 @@ namespace modeloMeseros.Controllers
 
             return RedirectToAction("EstadoDeOrden");
         }
-
         //[HttpPost]
-        //public IActionResult CambiarEstadoPedido(int idPedido, string nuevoEstado)
-        //{
-        //    var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_pedido == idPedido);
-
-        //    var detalle = _context.Detalle_Pedido.ToList(d => d.encabezado_id == idPedido && d.tipo_venta == "Local");
-
-        //    if (detalle != null)
-        //    {
-        //        if (detalle.estado == "Entregado" || detalle.estado =="Cancelado")
-        //        {
-        //            if (pedido != null)
-        //            {
-        //                pedido.estado = nuevoEstado;
-        //                _context.SaveChanges();
-        //            }
-
-
-        //        }
-        //        else
-        //        {
-        //            TempData["Error"] = "Solo se puede cerrar la cuenta si " +
-        //                "el estado de los detalles es Entregado.";
-        //        }
-
-        //    }
-
-        //    return RedirectToAction("EstadoDeOrden");
-        //}
         public IActionResult CambiarEstadoPedido(int idPedido, string nuevoEstado, int idMesa)
         {
             var pedido = _context.Pedido_Local.FirstOrDefault(d => d.id_pedido == idPedido && d.id_mesa == idMesa);

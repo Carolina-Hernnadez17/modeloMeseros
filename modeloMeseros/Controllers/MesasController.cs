@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -177,10 +178,12 @@ namespace modeloMeseros.Controllers
                     throw;
                 }
             }
+
+            HttpContext.Session.Clear();
+
+
             HttpContext.Session.SetInt32("id_mesa", id);
 
-
-            //return RedirectToAction(nameof(Index));
             return RedirectToAction("Create", "Pedido_Local");
         }
 
@@ -209,8 +212,10 @@ namespace modeloMeseros.Controllers
         public IActionResult BuscarPedido(int id)
         {
 
+            HttpContext.Session.Clear();
 
             HttpContext.Session.SetInt32("id_mesaOcupada", id);
+
 
             return RedirectToAction("Create", "Pedido_Local");
         }

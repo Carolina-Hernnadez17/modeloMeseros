@@ -75,6 +75,6 @@ app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Pedido_Local}/{action=Create}/{id?}");
+    pattern: "{controller=Mesas}/{action=Index}/{id?}");
 
 app.Run();
