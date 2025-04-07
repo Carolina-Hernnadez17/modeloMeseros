@@ -64,33 +64,38 @@
 </div>
 
 <!-- Modales para mesas disponibles -->
-@foreach (var item in Model.Where(m => m.estado == 0))
-{
-        <div class="modal fade" id="mesaModal-@item.id" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="true">
+@foreach (var item in Model.Where(m => m.disponibilidad.ToLower() == "libre"))
 
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Detalles de Mesa @item.numero</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p><strong>Capacidad:</strong> @item.capacidad personas</p>
-                        <p>¿Quieres ocupar esta mesa?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <form method="post" asp-action="Ocupar" asp-route-id="@item.id">
-                            <button type="submit" class="btn btn-success">Ocupar Mesa</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
+{
+    <!-- Modal corregido -->
+    <div class="modal fade" id="mesaModal-@item.id" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles de Mesa @item.numero</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Capacidad:</strong> @item.capacidad personas</p>
+                    <p>¿Quieres ocupar esta mesa?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="post" asp-controller="Mesas" asp-action="Ocupar" asp-route-id="@item.id">
+                        <a class="btn btn-info text-dark" asp-area="" asp-controller="Pedido_Local" asp-action="Create">
+                            Ocupar mesa
+                        </a>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
+    </div>
+
 }
 
 <!-- Modales para mesas ocupadas -->
-@foreach (var item in Model.Where(m => m.estado == 1))
+@foreach (var item in Model.Where(m => m.disponibilidad.ToLower() == "ocupado"))
+
 {
            <div class="modal fade" id="detallePedidoModal-@item.id" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="true">
 
