@@ -10,7 +10,7 @@
 
 <link href="@Url.Content("~/css_K/Style.css")" rel="stylesheet" />
 
-@if (Model == null)
+@* @if (Model == null)
 {
     <div class="alert alert-danger">No se pudo cargar la información del pedido.</div>
 }
@@ -18,7 +18,7 @@
 @if (ViewBag.ErrorMessage != null)
 {
     <div class="alert alert-warning">@ViewBag.ErrorMessage</div>
-}
+} *@
 
 <style>
     .table-container {
@@ -253,7 +253,7 @@
         <div class="text-center mt-4">
             <form asp-action="EnviarId"  >
                 <input asp-for="Pedido.id_mesa" type="hidden" name="id_mesa" value="@ViewBag.idMesa" />
-				<button   type="submit" class="btn btn-danger">Confirmar Pedido</button>
+				<button   type="submit" class="btn btn-danger"> Ver detalles del pedido </button>
             </form>
            
         </div>

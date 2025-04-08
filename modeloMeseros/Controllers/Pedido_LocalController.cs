@@ -19,33 +19,27 @@ public class Pedido_LocalController : Controller
     {
         verifiacrMesa();
 
-        // Obtener la hora actual como TimeSpan
         var horaActual = DateTime.Now.TimeOfDay;
 
-        // Obtener las listas filtradas por menú y hora
         var platos = ObtenerPlatos(tipoMenu, horaActual).ToList();
         var combos = ObtenerCombos(tipoMenu, horaActual).ToList();
         var promociones = ObtenerPromociones(tipoMenu, horaActual).ToList();
 
-        // 🔽 Filtrar por ID de combo si se seleccionó
         if (tipoCombo.HasValue)
         {
             combos = combos.Where(c => c.id == tipoCombo.Value).ToList();
         }
 
-        // 🔽 Filtrar por ID de promoción si se seleccionó
         if (tipoPromocion.HasValue)
         {
             promociones = promociones.Where(p => p.id == tipoPromocion.Value).ToList();
         }
 
-        // Si no hay platos disponibles, mostrar mensaje de error
         if (!platos.Any())
         {
             ViewBag.ErrorMessage = "No hay platos disponibles para este menú en este horario.";
         }
 
-        // Crear el modelo para la vista
         var model = new PedidoPlatosViewModel
         {
             Pedido = new Pedido_Local(),
@@ -54,10 +48,9 @@ public class Pedido_LocalController : Controller
             ListaPromocion = promociones
         };
 
-        // Pasar los filtros seleccionados a la vista
         ViewBag.TipoMenu = tipoMenu;
-        ViewBag.ListaCombos = ObtenerCombos(tipoMenu, horaActual).ToList(); // Todos los combos para el menú (sin filtrar por ID)
-        ViewBag.ListaPromociones = ObtenerPromociones(tipoMenu, horaActual).ToList(); // Todas las promos para el menú
+        ViewBag.ListaCombos = ObtenerCombos(tipoMenu, horaActual).ToList(); 
+        ViewBag.ListaPromociones = ObtenerPromociones(tipoMenu, horaActual).ToList(); 
         ViewBag.SelectedCombo = tipoCombo;
         ViewBag.SelectedPromocion = tipoPromocion;
 
@@ -65,30 +58,26 @@ public class Pedido_LocalController : Controller
     }
 
 
-    // Método privado para obtener platos filtrados
     private IEnumerable<platos> ObtenerPlatos(string tipoMenu, TimeSpan horaActual)
     {
         verifiacrMesa();
 
-        // Obtener los datos de la base de datos
         var query = _context.platos
             .Join(_context.menu_plato, p => p.id, mp => mp.plato_id, (p, mp) => new { p, mp })
             .Join(_context.menu, temp => temp.mp.menu_id, m => m.id, (temp, m) => new { temp.p, m, temp.mp })
             .Where(x =>
-                (string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu) &&  // Filtrado por tipo de menú
-                x.m.estado == 1 &&  // Aseguramos que el menú esté activo
-                x.mp.estado == 1 && // Aseguramos que el plato esté activo
-                x.p.estado == 1);   // Aseguramos que el plato esté activo
+                (string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu) &&  
+                x.m.estado == 1 &&  
+                x.mp.estado == 1 && 
+                x.p.estado == 1);   
 
-        // Convertir a Enumerable para filtrar la hora en memoria
         return query.AsEnumerable()
             .Where(x =>
-                horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  // Comprobamos que la hora actual esté dentro del rango permitido
-                horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())       // Comprobamos que la hora actual esté dentro del rango permitido
-            .Select(x => x.p);  // Seleccionamos solo la entidad del plato
+                horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  
+                horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())       
+            .Select(x => x.p);  
     }
 
-    // Método privado para obtener combos filtrados
     private IEnumerable<combos> ObtenerCombos(string tipoMenu, TimeSpan horaActual)
     {
         verifiacrMesa();
@@ -97,21 +86,20 @@ public class Pedido_LocalController : Controller
             .Join(_context.menu_combo, c => c.id, mc => mc.combo_id, (c, mc) => new { c, mc })
             .Join(_context.menu, temp => temp.mc.menu_id, m => m.id, (temp, m) => new { temp.c, m, temp.mc })
             .Where(x =>
-                (string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu) &&  // Filtrado por tipo de menú
-                x.m.estado == 1 &&  // Aseguramos que el menú esté activo
-                x.mc.estado == 1 && // Aseguramos que el combo esté activo
-                x.c.estado == 1);   // Aseguramos que el combo esté activo
+                (string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu) &&  
+                x.m.estado == 1 &&  
+                x.mc.estado == 1 && 
+                x.c.estado == 1);   
 
-        // Convertir la consulta a Enumerable para que podamos filtrar en memoria
+        
         return query.AsEnumerable()
             .Where(x =>
-                horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  // Comprobamos que la hora actual esté dentro del rango permitido
-                horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())       // Comprobamos que la hora actual esté dentro del rango permitido
-            .Select(x => x.c);  // Seleccionamos solo la entidad del combo
+                horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  
+                horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())      
+            .Select(x => x.c);  
     }
 
 
-    // Método privado para obtener promociones filtradas
     private IEnumerable<promociones> ObtenerPromociones(string tipoMenu, TimeSpan horaActual)
     {
         verifiacrMesa();
@@ -122,21 +110,20 @@ public class Pedido_LocalController : Controller
             .Join(_context.menu_combo, temp => temp.c.id, mc => mc.combo_id, (temp, mc) => new { temp.p, temp.c, temp.cp, mc })
             .Join(_context.menu, temp => temp.mc.menu_id, m => m.id, (temp, m) => new { temp.p, temp.c, temp.cp, temp.mc, m })
             .Where(x =>
-                (string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu) &&  // Filtrado por tipo de menú
-                x.m.estado == 1 &&  // Aseguramos que el menú esté activo
-                x.mc.estado == 1 && // Aseguramos que el combo esté activo
-                x.c.estado == 1 &&  // Aseguramos que el combo esté activo
-                x.p.estado == 1 &&  // Aseguramos que la promoción esté activa
-                x.cp.estado == 1);  // Aseguramos que la relación combo-promoción esté activa
+                (string.IsNullOrEmpty(tipoMenu) || x.m.tipo_menu == tipoMenu) &&  
+                x.m.estado == 1 &&  
+                x.mc.estado == 1 && 
+                x.c.estado == 1 &&  
+                x.p.estado == 1 &&  
+                x.cp.estado == 1);  
 
-        // Convertir la consulta a Enumerable para que podamos filtrar en memoria
         return query.AsEnumerable()
             .Where(x =>
-                x.cp.fecha_inicio <= DateTime.Now.Date &&  // Verificamos que la fecha de inicio de la promoción haya pasado
-                x.cp.fecha_fin >= DateTime.Now.Date &&     // Verificamos que la fecha de fin de la promoción aún no haya pasado
-                horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  // Comprobamos que la hora actual esté dentro del rango permitido
-                horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())       // Comprobamos que la hora actual esté dentro del rango permitido
-            .Select(x => x.p);  // Seleccionamos solo la entidad de la promoción
+                x.cp.fecha_inicio <= DateTime.Now.Date &&  
+                x.cp.fecha_fin >= DateTime.Now.Date &&     
+                horaActual >= (x.m.hora_inicio ?? TimeOnly.MinValue).ToTimeSpan() &&  
+                horaActual <= (x.m.hora_fin ?? TimeOnly.MinValue).ToTimeSpan())       
+            .Select(x => x.p);  
     }
 
     [HttpPost]
@@ -149,41 +136,37 @@ public class Pedido_LocalController : Controller
         {
             Console.WriteLine($"Error: {error.ErrorMessage}");
         }
-        // Validar el modelo
         if (!ModelState.IsValid)
         {
-            // Mostrar los errores de validación
+            
             foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
             {
-                Console.WriteLine(error.ErrorMessage); // Se imprimen los errores en la consola para depuración
+                Console.WriteLine(error.ErrorMessage); 
             }
             return View("~/Views/Pedido_Local/Create.cshtml", model);
         }
 
-        // Asegurarse de que el modelo no sea nulo
         if (model.Pedido == null)
         {
             ModelState.AddModelError("", "El modelo del pedido no es válido.");
             return View("~/Views/Pedido_Local/Create.cshtml", model);
         }
 
-        // Establecer la fecha de apertura y el estado
         model.Pedido.fechaApertura = DateTime.Now;
        
 
-        // Depuración de los valores del modelo antes de guardar
         Console.WriteLine($"Guardando Pedido: Cliente: {model.Pedido.nombre_cliente}, Mesa: {model.Pedido.id_mesa}, Mesero: {model.Pedido.id_mesero}, Estado: {model.Pedido.estado}");
 
         try
         {
-            // Verificar si el contexto está correctamente configurado
+            
             if (_context == null)
             {
                 ModelState.AddModelError("", "El contexto de base de datos no está configurado.");
                 return View("~/Views/Pedido_Local/Create.cshtml", model);
             }
 
-            // Agregar el pedido a la base de datos
+            
             _context.Pedido_Local.Add(model.Pedido);
             int result = _context.SaveChanges();
 
@@ -194,7 +177,7 @@ public class Pedido_LocalController : Controller
 
 
 
-            // Comprobar cuántos registros se han guardado
+            
             if (result > 0)
             {
                 Console.WriteLine($"Se guardaron {result} registros.");
@@ -208,9 +191,9 @@ public class Pedido_LocalController : Controller
         }
         catch (Exception ex)
         {
-            // Manejar excepciones de la base de datos y agregar un error al ModelState
+            
             ModelState.AddModelError("", "Error al guardar: " + ex.Message);
-            Console.WriteLine($"Error al guardar: {ex.Message}"); // Mostrar el error en la consola para depuración
+            Console.WriteLine($"Error al guardar: {ex.Message}"); 
             return View("~/Views/Pedido_Local/Create.cshtml", model);
         }
     }

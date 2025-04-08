@@ -83,6 +83,9 @@
 
                                                     @if (detalle.estado == "Finalizado")
                                                     {
+                                                        // Le mandamos valor Entregado ya que en nuestra base la modificamos para que despues de eso pueda la persona finalizar
+                                                        // su pedido en el boton ya que el documento asi decia y en la base no se encontraba entonces se lo agregamos nosotros
+
                                                         <button type="submit" name="nuevoEstado" value="Entregado"
                                                         class="btn btn-outline-danger btn-sm"
                                                         onclick="return confirm('¿Está seguro de que desea marcar este pedido como ENTREGADO?');">

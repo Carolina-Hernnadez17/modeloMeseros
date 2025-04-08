@@ -21,6 +21,7 @@ namespace modeloMeseros.Controllers
             .Where(p => p.estado == "Abierta")
             .ToList();
 
+
             var pedidoIds = pedidos.Select(p => p.id_pedido).ToList();
 
             var detalles = _context.Detalle_Pedido
@@ -55,6 +56,8 @@ namespace modeloMeseros.Controllers
         [HttpPost]
         public IActionResult CambiarEstadoDetalle(int idDetalle, string nuevoEstado)
         {
+            // Agregamos a la base de datos al check de estado Entregado ya que el modulo del documento
+            // lo solicitaba y no se encontraba en la base entonces a nuestra base se lo agregamos
             var detalle = _context.Detalle_Pedido.FirstOrDefault(d => d.id_detalle_pedido == idDetalle);
 
             if (detalle != null)
